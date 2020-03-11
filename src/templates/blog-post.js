@@ -19,6 +19,8 @@ class BlogPostTemplate extends React.Component {
     console.log('herro', preBody);
 
     function genPreBody() {
+      if (!preBody || preBody.length <= 0) return null;
+
       return preBody.map(stuff => {
         if (stuff.content.length > 0) {
           console.log('We have stuff');
