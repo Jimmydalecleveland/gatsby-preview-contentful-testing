@@ -3,6 +3,9 @@ import { graphql } from 'gatsby';
 import Helmet from 'react-helmet';
 import get from 'lodash/get';
 import Img from 'gatsby-image';
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import options from '../richTextRenderer';
+
 import Layout from '../components/layout';
 
 import heroStyles from '../components/hero.module.css';
@@ -11,41 +14,14 @@ class BlogPostTemplate extends React.Component {
   render() {
     const post = get(this.props, 'data.contentfulBlogPost');
     const siteTitle = get(this.props, 'data.site.siteMetadata.title');
-    const preBody = get(
-      this.props,
-      'data.contentfulBlogPost.childContentfulBlogPostPreBodyRichTextNode.content'
-    );
+    const preBody = get(this.props, 'data.contentfulBlogPost.preBody.json');
 
     console.log('herro', preBody);
 
     function genPreBody() {
-      if (!preBody || preBody.length <= 0) return null;
-
-      return preBody.map(stuff => {
-        if (stuff.content.length > 0) {
-          console.log('We have stuff');
-          return stuff.content.map(
-            content =>
-              console.log('content value: ', content.value) || (
-                <h1 style={{ color: 'indianred' }}>{content.value}</h1>
-              )
-          );
-        }
-
-        if (stuff.data && stuff.data.target) {
-          const destination = get(
-            stuff.data.target,
-            'fields.destination["en_US"]'
-          );
-          const buttonText = get(
-            stuff.data.target,
-            'fields.buttonText["en_US"]'
-          );
-          return <button href={destination}>{buttonText}</button>;
-        }
-
-        return null;
-      });
+      if (!preBody) return null;
+      console.log('preBody exists');
+      return documentToReactComponents(preBody, options);
     }
 
     return (
@@ -98,24 +74,8 @@ export const pageQuery = graphql`
           html
         }
       }
-      childContentfulBlogPostPreBodyRichTextNode {
-        content {
-          data {
-            target {
-              fields {
-                buttonText {
-                  en_US
-                }
-                destination {
-                  en_US
-                }
-              }
-            }
-          }
-          content {
-            value
-          }
-        }
+      preBody {
+        json
       }
     }
   }
