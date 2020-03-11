@@ -1,16 +1,50 @@
-import React from 'react'
-import { graphql } from 'gatsby'
-import Helmet from 'react-helmet'
-import get from 'lodash/get'
-import Img from 'gatsby-image'
-import Layout from '../components/layout'
+import React from 'react';
+import { graphql } from 'gatsby';
+import Helmet from 'react-helmet';
+import get from 'lodash/get';
+import Img from 'gatsby-image';
+import Layout from '../components/layout';
 
-import heroStyles from '../components/hero.module.css'
+import heroStyles from '../components/hero.module.css';
 
 class BlogPostTemplate extends React.Component {
   render() {
-    const post = get(this.props, 'data.contentfulBlogPost')
-    const siteTitle = get(this.props, 'data.site.siteMetadata.title')
+    const post = get(this.props, 'data.contentfulBlogPost');
+    const siteTitle = get(this.props, 'data.site.siteMetadata.title');
+    const preBody = get(
+      this.props,
+      'data.contentfulBlogPost.childContentfulBlogPostPreBodyRichTextNode.content'
+    );
+
+    console.log('herro', preBody);
+
+    function genPreBody() {
+      return preBody.map(stuff => {
+        if (stuff.content.length > 0) {
+          console.log('We have stuff');
+          return stuff.content.map(
+            content =>
+              console.log('content value: ', content.value) || (
+                <h1 style={{ color: 'indianred' }}>{content.value}</h1>
+              )
+          );
+        }
+
+        if (stuff.data && stuff.data.target) {
+          const destination = get(
+            stuff.data.target,
+            'fields.destination["en_US"]'
+          );
+          const buttonText = get(
+            stuff.data.target,
+            'fields.buttonText["en_US"]'
+          );
+          return <button href={destination}>{buttonText}</button>;
+        }
+
+        return null;
+      });
+    }
 
     return (
       <Layout location={this.props.location}>
@@ -32,6 +66,7 @@ class BlogPostTemplate extends React.Component {
             >
               {post.publishDate}
             </p>
+            {genPreBody()}
             <div
               dangerouslySetInnerHTML={{
                 __html: post.body.childMarkdownRemark.html,
@@ -40,11 +75,11 @@ class BlogPostTemplate extends React.Component {
           </div>
         </div>
       </Layout>
-    )
+    );
   }
 }
 
-export default BlogPostTemplate
+export default BlogPostTemplate;
 
 export const pageQuery = graphql`
   query BlogPostBySlug($slug: String!) {
@@ -61,6 +96,25 @@ export const pageQuery = graphql`
           html
         }
       }
+      childContentfulBlogPostPreBodyRichTextNode {
+        content {
+          data {
+            target {
+              fields {
+                buttonText {
+                  en_US
+                }
+                destination {
+                  en_US
+                }
+              }
+            }
+          }
+          content {
+            value
+          }
+        }
+      }
     }
   }
-`
+`;
