@@ -10,9 +10,9 @@ try {
 
 // Overwrite the Contentful config with environment variables if they exist
 contentfulConfig = {
-  spaceId: process.env.CONTENTFUL_SPACE_ID || contentfulConfig.spaceId,
+  spaceId: process.env.CONTENTFUL_SPACE_ID,
   accessToken:
-    process.env.CONTENTFUL_DELIVERY_TOKEN || contentfulConfig.accessToken,
+    process.env.CONTENTFUL_ACCESS_TOKEN
 //  forceFullSync: true,
 };
 
