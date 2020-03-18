@@ -13,7 +13,7 @@ contentfulConfig = {
   spaceId: process.env.CONTENTFUL_SPACE_ID || contentfulConfig.spaceId,
   accessToken:
     process.env.CONTENTFUL_DELIVERY_TOKEN || contentfulConfig.accessToken,
-  forceFullSync: true,
+//  forceFullSync: true,
 };
 
 const { spaceId, accessToken } = contentfulConfig;
